@@ -21,7 +21,7 @@ http.createServer((request, response) => {
     if (q.pathname.includes('documentation')) {
         filePath = (__dirname + '/documentation.html'); 
     } else {
-        filepath = 'index.html'; 
+        filePath = 'index.html'; 
     }
 
     // read filePath, otherwise return error.
