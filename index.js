@@ -4,16 +4,10 @@ const express = require('express'),
 const app = express();
 
 // Middleware functions
-
 app.use(express.static('public'));
 app.use(morgan('common'));
-app.use((err, req, res, next) => {
-    console.log(err.stack);
-    res.status(500).send('Something broke!');
-});
 
 // Declare topMovies 
-
 let topMovies = [
     {
         title: 'The Shawshank Redemption',
@@ -75,6 +69,10 @@ app.get('/movies', (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('I love movies!')
+// Error-handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 // Listen for requests
