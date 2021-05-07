@@ -68,7 +68,9 @@ app.get('/movies', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('I love movies!')
+    res.send('I love movies!');
+});
+
 // Error-handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
