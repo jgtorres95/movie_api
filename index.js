@@ -67,3 +67,17 @@ let topMovies = [
     }
 ];
 
+// GET requests
+
+app.get('/movies', (req, res) => {
+    res.json(topMovies);
+});
+
+app.get('/', (req, res) => {
+    res.send('I love movies!')
+});
+
+// Listen for requests
+app.listen(8080, () => {
+    console.log('Your app is listening on port 8080');
+});
