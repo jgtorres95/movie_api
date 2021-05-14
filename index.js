@@ -61,14 +61,42 @@ let topMovies = [
     }
 ];
 
-// GET requests
+// HTTP requests
 
 app.get('/movies', (req, res) => {
-    res.json(topMovies);
+    res.send('Successful GET request returning data on all movies');
 });
 
-app.get('/', (req, res) => {
-    res.send('I love movies!');
+app.get('/movies/:title', (req, res) => {
+    res.send('Successful GET request returning data on the movie');
+});
+
+app.get('/movies/genres/:genre', (req, res) => {
+    res.send('Successful GET request returning data on genre');
+});
+
+app.get('/movies/directors/:name', (req,res) => {
+    res.send('Successful GET request returning data on the director');
+});
+
+app.post('/users/register', (req,res) => {
+    res.send('Successful POST request returning data on the user that was registered');
+});
+
+app.put('/users/:username', (req, res) => {
+    res.send('Successful PUT request returning success message');
+});
+
+app.post('/users/:username/favorites/:movie', (req, res) => {
+    res.send('Successful POST request returing a success message');
+});
+
+app.delete('/users/:username/favorites/:movie', (req, res) => {
+    res.send('Successful DELETE request returning a success message');
+});
+
+app.delete('/users/register/:username', (req, res) => {
+    res.send('Successful DELETE request returning a success message');
 });
 
 // Error-handler
