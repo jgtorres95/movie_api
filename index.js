@@ -1,103 +1,182 @@
 const express = require('express'),
-    morgan = require('morgan');
+    bodyParser = require('body-parser'),
+    morgan = require('morgan'),
+    mongoose = require('mongoose'),
+    Models = require('./models.js'); 
 
+const Movies = Models.Movie;
+const Users = Models.User;
 const app = express();
 
+mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true}); 
+
 // Middleware functions
+app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(morgan('common'));
 
-// Declare topMovies 
-let topMovies = [
-    {
-        title: 'The Shawshank Redemption',
-        director: 'Frank Darabont',
-        year: '1994'
-    },
-    {
-        title: 'Inception',
-        director: 'Christopher Nolan',
-        year: '2010'
-    },
-    {
-        title: 'The Dark Knight',
-        director: 'Christopher Nolan',
-        year: '2008'
-    },
-    {
-        title: 'Avengers: Infinity War',
-        director: 'Anthony Russo, Joe Russo',
-        year: '2018'
-    },
-    {
-        title: 'The Wolf of Wall Street',
-        director: 'Martin Scorsese',
-        year: '2013'
-    },
-    {
-        title: 'Pulp Fiction',
-        director: 'Quentin Tarantino',
-        year: '1963'
-    },
-    {
-        title: 'Fight Club',
-        director: 'David Fincher',
-        year: '1999'
-    },
-    {
-        title: 'Parasite',
-        director: 'Bong Joon Ho',
-        year: '2019'
-    },
-    {
-        title: 'The Lion King',
-        director: 'Roger Allers, Rob Minkoff',
-        year: '1994'
-    },
-    {
-        title: 'Alien',
-        director: 'Ridley Scott',
-        year: '1979'
-    }
-];
-
 // HTTP requests
 
+// Return a list of ALL movies to the user
 app.get('/movies', (req, res) => {
-    res.send('Successful GET request returning data on all movies');
+    Movies.find()
+        .then((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err); 
+        }); 
 });
 
-app.get('/movies/:title', (req, res) => {
-    res.send('Successful GET request returning data on the movie');
+// Return data about a single movie by title
+app.get('/movies/:Title', (req, res) => {
+    Movies.findOne({ Title: req.params.Title})
+        .then((movie) => {
+            res.json(movie); 
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        }); 
 });
 
-app.get('/movies/genres/:genre', (req, res) => {
-    res.send('Successful GET request returning data on genre');
+// Return data about a genre by name/title
+app.get('/movies/genres/:Name', (req, res) => {
+    Movies.findOne({ 'Genre.Name': req.params.Name})
+        .then((movie) => {
+            res.json(movie.Genre);
+        })
+        .catch((err) => {
+            console.error(err); 
+            res.status(500).send('Error: ' + err); 
+        })
 });
 
-app.get('/movies/directors/:name', (req,res) => {
-    res.send('Successful GET request returning data on the director');
+// Return data about a director by name
+app.get('/movies/directors/:Name', (req,res) => {
+    Movies.findOne({ 'Director.Name': req.params.Name})
+        .then((movie) => {
+            res.json(movie.Director);
+        })
+        .catch((err) => {
+            console.error(err); 
+            res.status(500).send('Error: ' + err); 
+        })
 });
 
-app.post('/users/register', (req,res) => {
-    res.send('Successful POST request returning data on the user that was registered');
+//Add a user
+/* We'll expect JSON in this format
+{
+    ID: Integer,
+    Username: String,
+    Password: String,
+    Email: String,
+    Birthday: Date
+} */
+app.post('/users', (req, res) => {
+    Users.findOne({Username: req.body.Username})
+        .then((user) => {
+            if(user) {
+                return res.status(400).send(req.body.Username + 'already exists');
+            } else {
+                Users
+                    .create({
+                        Username: req.body.Username,
+                        Password: req.body.Password,
+                        Email: req.body.Email,
+                        Birthday: req.body.Birthday
+                    })
+                    .then((user) => {res.status(201).json(user)})
+                    .catch((err) => {
+                        console.error(err);
+                        res.status(500).send('Error: ' + err);
+                    })
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
 });
 
-app.put('/users/:username', (req, res) => {
-    res.send('Successful PUT request returning success message');
-});
+// Update a user's info, by username
+/* We'll expect JSON in this format:
+{
+    Username: String,
+    (required)
+    Password: String,
+    (required)
+    Email: String,
+    (required)
+    Birhtday: Date
+} */
 
-app.post('/users/:username/favorites/:movie', (req, res) => {
-    res.send('Successful POST request returing a success message');
-});
+app.put('/users/:Username', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+      {
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    },
+    { new: true },
+    (err, updatedUser) => {
+        if(err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else {
+          res.json(updatedUser);
+        }
+      });
+    });
 
-app.delete('/users/:username/favorites/:movie', (req, res) => {
-    res.send('Successful DELETE request returning a success message');
-});
+ // Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, {$push: { FavoriteMovies: req.params.MovieID}
+    },
+    { new: true }, //This lines make sure that the updated document is returned
+    (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else {
+          res.json(updatedUser);
+        }
+      });
+    });
 
-app.delete('/users/register/:username', (req, res) => {
-    res.send('Successful DELETE request returning a success message');
-});
+// Remove a movie from a user's list of favorites
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, {$pull: { FavoriteMovies: req.params.MovieID}
+    },
+    { new: true }, //This lines make sure that the updated document is returned
+    (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        } else {
+          res.json(updatedUser);
+        }
+      });
+    });
+
+// Remove a user by username 
+app.delete('/users/:Username', (req, res) => {
+    Users.findOneAndRemove({Username: req.params.Username })
+        .then((user) => {
+            if(!user) {
+                res.status(400).send(req.params.Username + ' was not found');
+            } else {
+                res.status(200).send(req.params.Username + ' was deleted'); 
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err); 
+        });
+}); 
 
 // Error-handler
 app.use((err, req, res, next) => {
