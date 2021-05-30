@@ -8,7 +8,11 @@ const Movies = Models.Movie;
 const Users = Models.User;
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true}); 
+/* Local database connection
+mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true}); */
+
+// Online database connection
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true});
 
 // Middleware functions
 app.use(bodyParser.json());
