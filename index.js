@@ -35,6 +35,8 @@ app.use(cors({
     }
 }));
 
+const { check, validationResult } = require('express-validator');
+
 // HTTP requests
 
 // Return a list of ALL movies to the user
@@ -95,6 +97,21 @@ app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false
     Birthday: Date
 } */
 app.post('/users', (req, res) => {
+    //Validation logic for request
+    [
+        check('Username', 'Username is required').isLength({min: 5}),
+        check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+        check('Password', 'Password is required').not().isEmpty(),
+        check('Email', 'Email does not appear to be valid').isEmail()
+    ]
+
+    let errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
     Users.findOne({Username: req.body.Username})
         .then((user) => {
             if(user) {
