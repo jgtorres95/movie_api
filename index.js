@@ -2,7 +2,7 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
     mongoose = require('mongoose'),
-    Models = require('./models.js'); 
+    Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -120,7 +120,7 @@ app.post('/users', (req, res) => {
                 Users
                     .create({
                         Username: req.body.Username,
-                        Password: req.body.Password,
+                        Password: hashedPassword,
                         Email: req.body.Email,
                         Birthday: req.body.Birthday
                     })
