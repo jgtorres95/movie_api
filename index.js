@@ -105,20 +105,20 @@ app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false
     Email: String,
     Birthday: Date
 } */
-app.post('/users', (req, res) => {
-    //Validation logic for request
+app.post('/users',
     [
         check('Username', 'Username is required').isLength({min: 5}),
         check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
         check('Password', 'Password is required').not().isEmpty(),
         check('Email', 'Email does not appear to be valid').isEmail()
-    ]
-
-    let errors = validationResult(req);
+    ], (req, res) => {
     
+    // Check for errors
+    let errors = validationResult(req);
+
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
-    }
+}
 
     let hashedPassword = Users.hashPassword(req.body.Password);
     Users.findOne({Username: req.body.Username})
@@ -158,14 +158,15 @@ app.post('/users', (req, res) => {
     Birhtday: Date
 } */
 
-app.put('/users/:Username', passport.authenticate('jwt', { session: false}), (req, res) => {
-    //Validation logic for request
+app.put('/users/:Username', passport.authenticate('jwt', { session: false}),    
     [
         check('Username', 'Username is required').isLength({min: 5}),
         check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
         check('Password', 'Password is required').not().isEmpty(),
         check('Email', 'Email does not appear to be valid').isEmail()
-    ]
+    ], (req, res) => {
+    //Validation logic for request
+ 
 
     let errors = validationResult(req);
     
