@@ -25,7 +25,7 @@ const passport = require('passport');
 require('./passport');
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+let allowedOrigins = ['https://cf-myflix-app.herokuapp.com'];
 
 app.use(cors({
     origin: (origin, callback) => {
