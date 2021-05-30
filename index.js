@@ -43,6 +43,11 @@ const { check, validationResult } = require('express-validator');
 
 // HTTP requests
 
+// Default endpoint
+app.get('/', (req, res) => {
+    res.send('Welcome to myFlix!');
+})
+
 // Return a list of ALL movies to the user
 app.get('/movies', passport.authenticate('jwt', { session: false}), (req, res) => {
     Movies.find()
