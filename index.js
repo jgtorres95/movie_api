@@ -2,33 +2,27 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
     mongoose = require('mongoose'),
-    Models = require('./models.js');
+    Models = require('./models.js'),
+    Movies = Models.Movie,
+    Users = Models.User,
+    app = express(),
+    passport = require('passport'),
+    cors = require('cors'),
+    { check, validationResult } = require('express-validator'); 
 
-const Movies = Models.Movie;
-const Users = Models.User;
-const app = express();
+app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(morgan('common'));
+require('./passport');
+app.use(cors());
+
+let auth = require('./auth')(app);
 
 /* Local database connection
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true}); */
 
 // Online database connection
 mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true});
-
-// Middleware functions
-app.use(bodyParser.json());
-app.use(express.static('public'));
-app.use(morgan('common'));
-
-let auth = require('./auth')(app);
-
-const passport = require('passport');
-require('./passport');
-
-const cors = require('cors');
-
-app.use(cors());
-
-const { check, validationResult } = require('express-validator');
 
 // HTTP requests
 
