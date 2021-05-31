@@ -167,7 +167,6 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false}),
     ], (req, res) => {
     //Validation logic for request
  
-
     let errors = validationResult(req);
     
     if (!errors.isEmpty()) {
