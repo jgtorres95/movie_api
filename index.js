@@ -148,8 +148,8 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false}),
         check('Password', 'Password is required').not().isEmpty(),
         check('Email', 'Email does not appear to be valid').isEmail()
     ], (req, res) => {
+    
     //Validation logic for request
- 
     let errors = validationResult(req);
     
     if (!errors.isEmpty()) {
@@ -180,7 +180,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false}),
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false}), (req, res) => {
     Users.findOneAndUpdate({ Username: req.params.Username }, {$push: { FavoriteMovies: req.params.MovieID}
     },
-    { new: true }, //This lines make sure that the updated document is returned
+    { new: true }, 
     (err, updatedUser) => {
         if (err) {
           console.error(err);
@@ -195,7 +195,7 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
 app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false}), (req, res) => {
     Users.findOneAndUpdate({ Username: req.params.Username }, {$pull: { FavoriteMovies: req.params.MovieID}
     },
-    { new: true }, //This lines make sure that the updated document is returned
+    { new: true }, 
     (err, updatedUser) => {
         if (err) {
           console.error(err);
