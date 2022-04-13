@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt'); 
 
-//Define Schemas
+// Define Schemas
+
+// create movieSchema
 let movieSchema = mongoose.Schema({
     Title: {type: String, required: true},
     Description: {type: String, required: true},
@@ -18,6 +20,7 @@ let movieSchema = mongoose.Schema({
     Featured: Boolean
 });
 
+// create userSchema
 let userSchema = mongoose.Schema({
     Username: {type: String, required: true},
     Password: {type: String, required: true},
@@ -26,16 +29,26 @@ let userSchema = mongoose.Schema({
     FavoriteMovies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
 }); 
 
-// Hash submitted password
+/**
+ * Hash submitted password
+ * @param {*} password 
+ * @returns {string} hashed password
+ */
 userSchema.statics.hashPassword = (password) => {
     return bcrypt.hashSync(password, 10);
 };
 
-// Compare hashed passwords
+
+/**
+ * Compare hashed passwords
+ * @param {*} password
+ * @returns {boolean} true if passwords match, false if they do not match
+ */
 userSchema.methods.validatePassword = function(password) {
     return bcrypt.compareSync(password, this.Password);
 };
 
+// Create models for movies and users collection using schemas above
 let Movie = mongoose.model('Movie', movieSchema);
 let User = mongoose.model('User', userSchema);
 
