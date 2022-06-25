@@ -158,11 +158,11 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false}), (re
 
  * We'll expect a JSON object in this format
   {
-    ID: Integer,
+    ID: String,
     Username: String,
     Password: String,
     Email: String,
-    Birthday: Date
+    Birthday: String
   } 
 
 */
@@ -223,7 +223,7 @@ app.post('/users',
     (required)
     Email: String,
     (required)
-    Birhtday: Date
+    Birhtday: String
   } 
 */
 app.put('/users/:Username', passport.authenticate('jwt', { session: false}),    
