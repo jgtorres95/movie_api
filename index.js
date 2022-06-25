@@ -29,7 +29,7 @@ require('./passport');
 app.use(cors());
 
 // implement authorization
-let auth = require('./auth')(app);
+require('./auth')(app);
 
 /* Local database connection
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true}); */
