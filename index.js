@@ -26,7 +26,7 @@ app.use(morgan('common'));
 require('./passport');
 
 // create allowedOrigins array and enable CORS
-let allowedOrigins = ['http://localhost:8080', 'https://jgtorres95-myflix-react.netlify.app', 'https://jgtorres95.github.io/myFlix-Angular-app'];
+let allowedOrigins = ['http://localhost:8080', 'https://jgtorres95-myflix-react.netlify.app', 'https://jgtorres95.github.io/myFlix-Angular-app/welcome'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
