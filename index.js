@@ -25,6 +25,7 @@ app.use(morgan('common'));
 // run passport file
 require('./passport');
 
+// enable CORS
 app.use(cors());
 
 // create allowedOrigins array and enable CORS
